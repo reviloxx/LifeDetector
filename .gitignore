@@ -1,0 +1,5 @@
+*.jpg
+*.mov
+*.avi
+*.mp4
+shape_predictor_68_face_landmarks.dat
