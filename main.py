@@ -4,7 +4,7 @@ from face_aligner.align_faces import align_faces
 from frame_extractor import extract_frames
 from video_renderer import render_video
 
-inputFile = 'fraud7.mov'
+inputFile = 'vid_paper.mp4'
 
 inputDir = 'video_in/'
 inputPath = inputDir + inputFile
