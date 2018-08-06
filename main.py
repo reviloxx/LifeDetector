@@ -4,7 +4,7 @@ from face_aligner.align_faces import align_faces
 from frame_extractor import extract_frames
 from video_renderer import render_video
 
-inputFile = 'fraud35.mp4'
+inputFile = 'fraud17.mp4'
 
 inputDir = 'video_in/'
 inputPath = inputDir + inputFile
@@ -32,17 +32,17 @@ render_video('./temp/2_align/' + inputFile + '/', './temp/2_align/' + inputFile 
 print('STEP 5: magnify video')
 eng.cd('.\eulerian_video_magnification')
 inputPath = '../temp/2_align/' + inputFile + '/video.avi'
-eng.amplify_spatial_Gdown_temporal_ideal(inputPath, '../temp/4_magnify/' + inputFile + '/', float(50), float(4),
+motAttFile = '../temp/2_align/' + inputFile + '/moAttFile.avi'
+eng.motionAttenuateFixedPhase(inputPath, motAttFile, nargout=0)
+eng.amplify_spatial_Gdown_temporal_ideal(motAttFile, '../temp/4_magnify/' + inputFile + '/', float(50), float(4),
                                          50 / 60, 60 / 60,
                                          float(30), float(1), nargout=0)
 
-# eng.amplify_spatial_Gdown_temporal_ideal('../video_in/fraud6.mov', '../temp/4_magnify/' + inputFile + '/',
-#                                          float(50), float(4), 50 / 60, 60 / 60, float(30), float(1), nargout=0)
 
 # 6 - extract slice
 print('STEP 6: extract slice')
 eng.cd('..\slicer')
 # eng.xt_slicer('../temp/4_magnify/' + inputFile + '/video.avi', '../temp/5_slice/' + inputFile + '/', nargout=0)
-eng.yt_slicer('../temp/4_magnify/' + inputFile + '/video.avi', '../temp/5_slice/' + inputFile + '/', nargout=0)
+eng.yt_slicer('../temp/4_magnify/' + inputFile + '/moAttFile.avi', '../temp/5_slice/' + inputFile + '/', nargout=0)
 
 # 6 - classify slice
