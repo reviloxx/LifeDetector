@@ -4,7 +4,7 @@ from face_aligner.align_faces import align_faces
 from frame_extractor import extract_frames
 from video_renderer import render_video
 
-inputFile = 'vid_paper.mp4'
+inputFile = 'fraud35.mp4'
 
 inputDir = 'video_in/'
 inputPath = inputDir + inputFile
@@ -42,7 +42,7 @@ eng.amplify_spatial_Gdown_temporal_ideal(inputPath, '../temp/4_magnify/' + input
 # 6 - extract slice
 print('STEP 6: extract slice')
 eng.cd('..\slicer')
-eng.xt_slicer('../temp/4_magnify/' + inputFile + '/video.avi', '../temp/5_slice/' + inputFile + '/', nargout=0)
+# eng.xt_slicer('../temp/4_magnify/' + inputFile + '/video.avi', '../temp/5_slice/' + inputFile + '/', nargout=0)
 eng.yt_slicer('../temp/4_magnify/' + inputFile + '/video.avi', '../temp/5_slice/' + inputFile + '/', nargout=0)
 
 # 6 - classify slice
