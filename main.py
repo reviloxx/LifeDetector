@@ -4,7 +4,7 @@ from face_aligner.align_faces import align_faces
 from frame_extractor import extract_frames
 from video_renderer import render_video
 
-inputFile = 'fraud17.mp4'
+inputFile = 'valid10.mp4'
 
 inputDir = 'video_in/'
 inputPath = inputDir + inputFile
@@ -35,7 +35,7 @@ inputPath = '../temp/2_align/' + inputFile + '/video.avi'
 motAttFile = '../temp/2_align/' + inputFile + '/moAttFile.avi'
 eng.motionAttenuateFixedPhase(inputPath, motAttFile, nargout=0)
 eng.amplify_spatial_Gdown_temporal_ideal(motAttFile, '../temp/4_magnify/' + inputFile + '/', float(50), float(4),
-                                         50 / 60, 60 / 60,
+                                         0.83, 1,
                                          float(30), float(1), nargout=0)
 
 

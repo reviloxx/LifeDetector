@@ -12,16 +12,17 @@ import os
 from PIL import ImageFont
 from PIL import ImageDraw
 
-batch_size = 256
+batch_size = 2
 use_cuda = True
+train_model = False
 
 normalize = transforms.Normalize(
     mean=[0.485, 0.456, 0.406],
     std=[0.229, 0.224, 0.225]
 )
 transform = transforms.Compose([
-    transforms.Resize(256),
-    transforms.CenterCrop(256),
+    transforms.Resize(300),
+    transforms.CenterCrop(300),
     transforms.ToTensor(),
     normalize])
 
@@ -93,9 +94,7 @@ class Net(nn.Module):
 
 
 model = Net()
-if use_cuda:
-    model = model.cuda()
-optimizer = optim.Adam(model.parameters(), lr=0.01)
+optimizer = optim.Adam(model.parameters(), lr=0.001)
 
 
 def train(epoch):
@@ -136,9 +135,6 @@ def test():
         out = model(data)
         # print(str(f) + ": " + str(out.data.max(1, keepdim=True)[1]))
         draw = ImageDraw.Draw(img)
-        # font = ImageFont.truetype(<font-file>, <font-size>)
-        # font = ImageFont.truetype("Roboto-Bold.ttf", 50)
-        # draw.text((x, y),"Sample Text",(r,g,b))
         text = "Valid"
         print(out.data.max(1, keepdim=True)[1].cpu().numpy()[0])
         if out.data.max(1, keepdim=True)[1].cpu().numpy()[0] != 0:
@@ -148,13 +144,20 @@ def test():
         x = input('')
 
 
-if not os.path.isfile('model.pt'):
+if train_model:
+    if os.path.isfile('model.pt'):
+        model = torch.load('model.pt')
     load_training_data()
-    for epoch in range(1, 30):
-        train(epoch)
-        torch.save(model, 'model.pt')
-else:
-    model = torch.load('model.pt')
     if use_cuda:
         model = model.cuda()
-test()
+    for epoch in range(1, 1000):
+        train(epoch)
+    torch.save(model, 'model.pt')
+else:
+    if not os.path.isfile('model.pt'):
+        print('Error: No model found!')
+    else:
+        model = torch.load('model.pt')
+        if use_cuda:
+            model = model.cuda()
+        test()

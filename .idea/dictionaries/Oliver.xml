@@ -3,6 +3,7 @@
     <words>
       <w>conv</w>
       <w>cuda</w>
+      <w>optim</w>
     </words>
   </dictionary>
 </component>
