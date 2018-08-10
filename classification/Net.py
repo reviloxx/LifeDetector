@@ -12,9 +12,9 @@ import os
 from PIL import ImageFont
 from PIL import ImageDraw
 
-batch_size = 2
+batch_size = 18
 use_cuda = True
-train_model = False
+train_model = True
 
 normalize = transforms.Normalize(
     mean=[0.485, 0.456, 0.406],
@@ -92,9 +92,32 @@ class Net(nn.Module):
         x = self.fc2(x)
         return F.sigmoid(x)
 
+    def classify(self, path):
+        if not os.path.isfile('classification/model.pt'):
+            print('Error: No model found!')
+            exit(1)
+        else:
+            model = torch.load('classification/model.pt')
+            model = model.cuda()
+
+        img = Image.open(path)
+        img_eval_tensor = transform(img)
+        img_eval_tensor.unsqueeze_(0)
+        data = img_eval_tensor
+        out = model(data.cuda())
+        draw = ImageDraw.Draw(img)
+        text = "Valid"
+        print(out.data.max(1, keepdim=True)[1].cpu().numpy()[0])
+        if out.data.max(1, keepdim=True)[1].cpu().numpy()[0] != 0:
+            text = "Fraud"
+        print(text)
+        draw.text((0, 0), text, (255, 255, 255))
+        img.show()
+        x = input('')
+
 
 model = Net()
-optimizer = optim.Adam(model.parameters(), lr=0.001)
+optimizer = optim.Adam(model.parameters(), lr=0.00001)
 
 
 def train(epoch):
@@ -133,7 +156,6 @@ def test():
             data = data.cuda()
         data = Variable(data)
         out = model(data)
-        # print(str(f) + ": " + str(out.data.max(1, keepdim=True)[1]))
         draw = ImageDraw.Draw(img)
         text = "Valid"
         print(out.data.max(1, keepdim=True)[1].cpu().numpy()[0])
@@ -144,20 +166,20 @@ def test():
         x = input('')
 
 
-if train_model:
-    if os.path.isfile('model.pt'):
-        model = torch.load('model.pt')
-    load_training_data()
-    if use_cuda:
-        model = model.cuda()
-    for epoch in range(1, 1000):
-        train(epoch)
-    torch.save(model, 'model.pt')
-else:
-    if not os.path.isfile('model.pt'):
-        print('Error: No model found!')
-    else:
-        model = torch.load('model.pt')
-        if use_cuda:
-            model = model.cuda()
-        test()
+# if train_model:
+#     if os.path.isfile('model.pt'):
+#         model = torch.load('model.pt')
+#     load_training_data()
+#     if use_cuda:
+#         model = model.cuda()
+#     for epoch in range(1, 10000):
+#         train(epoch)
+#     torch.save(model, 'model.pt')
+# else:
+#     if not os.path.isfile('model.pt'):
+#         print('Error: No model found!')
+#     else:
+#         model = torch.load('model.pt')
+#         if use_cuda:
+#             model = model.cuda()
+#         test()

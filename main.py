@@ -3,12 +3,18 @@ from moviepy.video.io.ffmpeg_tools import ffmpeg_extract_subclip
 from face_aligner.align_faces import align_faces
 from frame_extractor import extract_frames
 from video_renderer import render_video
+from classification.Net import Net
 
-inputFile = 'valid10.mp4'
+
+inputFile = 'fraud13.mp4'
 
 inputDir = 'video_in/'
 inputPath = inputDir + inputFile
 eng = matlab.engine.start_matlab()
+net = Net()
+
+net.classify('./temp/5_slice/' + inputFile + '/yt_slice.jpg')
+exit()
 
 # 1 - extract 10 second subclip
 print('STEP 1: extracting 10 second subclip')
@@ -28,12 +34,17 @@ align_faces(path, out_dir)
 print('STEP 4: generate new video from cropped face frames')
 render_video('./temp/2_align/' + inputFile + '/', './temp/2_align/' + inputFile + '/')
 
-# 5 - magnify video
-print('STEP 5: magnify video')
+
 eng.cd('.\eulerian_video_magnification')
 inputPath = '../temp/2_align/' + inputFile + '/video.avi'
 motAttFile = '../temp/2_align/' + inputFile + '/moAttFile.avi'
+
+# 5 - stabilize video
+print('STEP 6: stabilize video')
 eng.motionAttenuateFixedPhase(inputPath, motAttFile, nargout=0)
+
+# 6 - magnify video
+print('STEP 6: magnify video')
 eng.amplify_spatial_Gdown_temporal_ideal(motAttFile, '../temp/4_magnify/' + inputFile + '/', float(50), float(4),
                                          0.83, 1,
                                          float(30), float(1), nargout=0)
@@ -45,4 +56,6 @@ eng.cd('..\slicer')
 # eng.xt_slicer('../temp/4_magnify/' + inputFile + '/video.avi', '../temp/5_slice/' + inputFile + '/', nargout=0)
 eng.yt_slicer('../temp/4_magnify/' + inputFile + '/moAttFile.avi', '../temp/5_slice/' + inputFile + '/', nargout=0)
 
-# 6 - classify slice
+# 7 - classify slice
+print('STEP 7: classify slice')
+net.classify('./temp/5_slice/' + inputFile + '/yt_slice.jpg')
